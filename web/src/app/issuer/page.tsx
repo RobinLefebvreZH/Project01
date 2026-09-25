@@ -178,7 +178,10 @@ function IssuerPanel({ factory }: { factory: Address }) {
   return (
     <div className="space-y-8">
       {isIssuer === false ? (
-        <Notice>This wallet is not an approved issuer. Ask the platform admin to approve it.</Notice>
+        <Notice>
+          The connected wallet <span className="mono">{address}</span> is not an approved issuer. Ask the platform admin
+          to approve it on the Admin page, or switch to an issuer wallet.
+        </Notice>
       ) : (
         <CreateTokenForm factory={factory} onCreated={() => refetch()} />
       )}
