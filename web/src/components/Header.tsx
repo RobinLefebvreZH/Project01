@@ -5,34 +5,68 @@ import { usePathname } from "next/navigation";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 const links = [
-  { href: "/", label: "Tokens" },
-  { href: "/issuer", label: "Issuer" },
-  { href: "/admin", label: "Admin" },
+  { href: "/", label: "tokens" },
+  { href: "/issuer", label: "issuer" },
+  { href: "/admin", label: "admin" },
 ];
+
+const navLink = "ml-[22px] text-[11px]";
+
+function Wallet() {
+  return (
+    <ConnectButton.Custom>
+      {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
+        if (!mounted) return <span className={navLink} aria-hidden />;
+        if (!account || !chain) {
+          return (
+            <button onClick={openConnectModal} className={`${navLink} cursor-pointer`} style={{ color: "var(--ink)" }}>
+              connect wallet
+            </button>
+          );
+        }
+        return (
+          <>
+            <button
+              onClick={openChainModal}
+              className={`${navLink} cursor-pointer`}
+              style={{ color: chain.unsupported ? "var(--alert)" : "var(--quiet)" }}
+            >
+              {chain.unsupported ? "wrong network" : chain.name?.toLowerCase()}
+            </button>
+            <button onClick={openAccountModal} className={`${navLink} cursor-pointer`} style={{ color: "var(--ink)" }}>
+              {account.displayName}
+            </button>
+          </>
+        );
+      }}
+    </ConnectButton.Custom>
+  );
+}
 
 export function Header() {
   const path = usePathname();
+  const active = (href: string) => (href === "/" ? path === "/" || path.startsWith("/token") : path.startsWith(href));
   return (
-    <header className="border-b" style={{ borderColor: "var(--border)", background: "var(--card)" }}>
-      <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-3">
-        <div className="flex items-center gap-6">
-          <Link href="/" className="font-semibold tracking-tight">
-            RWA Token Factory
+    <header className="flex flex-wrap items-baseline justify-between gap-y-3 px-[18px] py-5 sm:px-8 sm:py-7">
+      <Link href="/" className="text-[11px] uppercase tracking-[0.18em]">
+        RWA Token Factory
+      </Link>
+      <nav className="-ml-[22px] flex flex-wrap items-baseline">
+        {links.map((l) => (
+          <Link
+            key={l.href}
+            href={l.href}
+            className={navLink}
+            style={{ color: active(l.href) ? "var(--ink)" : "var(--quiet)" }}
+          >
+            {l.label}
           </Link>
-          <nav className="flex gap-4 text-sm">
-            {links.map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                className={path === l.href ? "font-medium" : "muted hover:underline"}
-              >
-                {l.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-        <ConnectButton showBalance={false} chainStatus="icon" />
-      </div>
+        ))}
+        <span className={navLink} style={{ color: "var(--line)" }}>
+          |
+        </span>
+        <Wallet />
+      </nav>
     </header>
   );
 }

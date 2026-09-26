@@ -29,7 +29,7 @@ export function FactoryGuard({ children }: { children: (factory: Address) => Rea
               </button>
             )}
             {error && (
-              <p className="mt-2 text-xs">
+              <p className="mt-2 text-[11px]">
                 Your wallet refused to switch. In Rabby, turn on test networks in Settings first, then try again.
               </p>
             )}

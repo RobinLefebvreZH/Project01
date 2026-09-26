@@ -42,26 +42,43 @@ export function formatValuation(value: bigint | undefined, currency: string | un
   return `${major.toLocaleString(undefined, { maximumFractionDigits: 2 })} ${currency ?? ""}`.trim();
 }
 
+/** One token as a row: name and symbol on the left, key figures on the right. */
 export function TokenCard({ address }: { address: Address }) {
   const t = useTokenSummary(address);
   return (
-    <Link href={`/token/${address}`} className="card block transition hover:shadow-md">
-      <div className="flex items-start justify-between gap-2">
-        <div>
-          <div className="font-semibold">{t.name ?? "…"}</div>
-          <div className="muted text-sm">{t.symbol}</div>
-        </div>
-        <span className="badge">{t.assetInfo?.assetType || "Asset"}</span>
-      </div>
-      <dl className="mt-4 grid grid-cols-2 gap-2 text-sm">
-        <dt className="muted">Supply</dt>
-        <dd className="text-right">{formatAmount(t.totalSupply, t.decimals)}</dd>
-        <dt className="muted">Valuation</dt>
-        <dd className="text-right">{formatValuation(t.assetInfo?.valuation, t.assetInfo?.valuationCurrency)}</dd>
-        <dt className="muted">Jurisdiction</dt>
-        <dd className="text-right">{t.assetInfo?.jurisdiction || "—"}</dd>
-      </dl>
-      {t.paused && <p className="mt-3 text-xs" style={{ color: "#c0392b" }}>Transfers paused</p>}
-    </Link>
+    <li className="border-t" style={{ borderColor: "var(--line)" }}>
+      <Link
+        href={`/token/${address}`}
+        className="grid grid-cols-1 gap-x-6 gap-y-1 py-4 sm:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,1fr)_120px] sm:items-baseline"
+        style={{ borderBottom: 0 }}
+      >
+        <span>
+          <span style={{ color: "var(--ink)" }}>{t.name ?? "…"}</span>
+          <span className="muted ml-2">{t.symbol}</span>
+        </span>
+        <span style={{ color: "var(--mid)" }}>
+          {t.assetInfo?.assetType || "Asset"}
+          {t.assetInfo?.jurisdiction ? ` · ${t.assetInfo.jurisdiction}` : ""}
+        </span>
+        <span style={{ color: "var(--mid)" }}>
+          {formatValuation(t.assetInfo?.valuation, t.assetInfo?.valuationCurrency)}
+        </span>
+        <span className="muted sm:text-right">
+          {t.paused ? (
+            <span className="badge badge-alert">paused</span>
+          ) : (
+            <>supply {formatAmount(t.totalSupply, t.decimals)}</>
+          )}
+        </span>
+      </Link>
+    </li>
+  );
+}
+
+export function TokenList({ children }: { children: React.ReactNode }) {
+  return (
+    <ul className="border-b" style={{ borderColor: "var(--line)" }}>
+      {children}
+    </ul>
   );
 }

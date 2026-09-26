@@ -19,14 +19,14 @@ export function TxStatus({
   const link = hash ? explorerUrl(chainId, "tx", hash) : undefined;
   if (status === "idle") return null;
   return (
-    <p className="mt-2 text-sm" role="status">
+    <p className="mt-2" role="status">
       {status === "pending" && <span className="muted">Waiting for confirmation…</span>}
-      {status === "success" && <span style={{ color: "var(--color-brand)" }}>{successText}</span>}
-      {status === "error" && <span style={{ color: "#c0392b" }}>{error}</span>}
+      {status === "success" && <span style={{ color: "var(--ink)" }}>{successText}</span>}
+      {status === "error" && <span style={{ color: "var(--alert)" }}>{error}</span>}
       {link && (
         <>
           {" "}
-          <a href={link} target="_blank" rel="noreferrer" className="underline">
+          <a href={link} target="_blank" rel="noreferrer" >
             View transaction
           </a>
         </>
@@ -39,7 +39,7 @@ export function AddressLink({ address }: { address: string }) {
   const chainId = useChainId();
   const link = explorerUrl(chainId, "address", address);
   return link ? (
-    <a href={link} target="_blank" rel="noreferrer" className="mono underline">
+    <a href={link} target="_blank" rel="noreferrer" className="mono">
       {address}
     </a>
   ) : (
@@ -48,7 +48,7 @@ export function AddressLink({ address }: { address: string }) {
 }
 
 export function Notice({ children }: { children: ReactNode }) {
-  return <div className="card muted text-sm">{children}</div>;
+  return <div className="card muted">{children}</div>;
 }
 
 export function Field({ label, children, hint }: { label: string; children: ReactNode; hint?: string }) {
@@ -56,7 +56,7 @@ export function Field({ label, children, hint }: { label: string; children: Reac
     <label className="block">
       <span className="label">{label}</span>
       {children}
-      {hint && <span className="muted mt-1 block text-xs">{hint}</span>}
+      {hint && <span className="muted mt-1 block text-[11px]">{hint}</span>}
     </label>
   );
 }

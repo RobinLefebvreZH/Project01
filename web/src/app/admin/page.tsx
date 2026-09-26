@@ -32,7 +32,7 @@ function AdminPanel({ factory }: { factory: Address }) {
 
   return (
     <div className="space-y-6">
-      <div className="card space-y-2 text-sm">
+      <div className="card space-y-2">
         <div>
           <span className="muted">Factory: </span>
           <AddressLink address={factory} />
@@ -49,7 +49,7 @@ function AdminPanel({ factory }: { factory: Address }) {
 
       {isPending && (
         <div className="card">
-          <p className="text-sm">You have been nominated as the new owner of this factory.</p>
+          <p>You have been nominated as the new owner of this factory.</p>
           <button
             className="btn mt-3"
             disabled={acceptTx.pending}
@@ -66,8 +66,8 @@ function AdminPanel({ factory }: { factory: Address }) {
       ) : (
         <>
           <div className="card space-y-3">
-            <h2 className="font-semibold">Approve or revoke an issuer</h2>
-            <p className="muted text-sm">
+            <h2>Approve or revoke an issuer</h2>
+            <p className="muted">
               Approved issuers can create tokens. Revoking an issuer does not affect tokens they already created.
             </p>
             <Field label="Issuer wallet address">
@@ -98,8 +98,8 @@ function AdminPanel({ factory }: { factory: Address }) {
           </div>
 
           <div className="card space-y-3">
-            <h2 className="font-semibold">Transfer factory ownership</h2>
-            <p className="muted text-sm">
+            <h2>Transfer factory ownership</h2>
+            <p className="muted">
               Two-step transfer: the new owner must accept on this page. Use a Safe multisig on mainnet.
             </p>
             <Field label="New owner">
@@ -124,8 +124,8 @@ function AdminPanel({ factory }: { factory: Address }) {
 
 export default function AdminPage() {
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Platform admin</h1>
+    <div>
+      <h2 className="mb-9">platform admin</h2>
       <FactoryGuard>{(factory) => <AdminPanel factory={factory} />}</FactoryGuard>
     </div>
   );

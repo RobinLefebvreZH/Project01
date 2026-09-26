@@ -28,27 +28,19 @@ function Overview({ token, t }: { token: Address; t: ReturnType<typeof useTokenS
   const info = t.assetInfo;
   const updated = info?.valuationTimestamp ? new Date(Number(info.valuationTimestamp) * 1000).toLocaleDateString() : "—";
   return (
-    <div className="card space-y-4">
-      <div className="flex flex-wrap items-start justify-between gap-2">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{t.name ?? "…"}</h1>
-          <p className="muted">{t.symbol}</p>
-        </div>
-        <div className="flex gap-2">
-          <span className="badge">{info?.assetType || "Asset"}</span>
-          {t.paused && (
-            <span className="badge" style={{ background: "#fbe9e7", color: "#b3261e" }}>
-              Paused
-            </span>
-          )}
-        </div>
-      </div>
-      <div className="text-sm">
-        <span className="muted">Contract: </span>
+    <section>
+      <h2 className="mb-9">
+        {(info?.assetType || "asset").toLowerCase()} · {t.symbol ?? "…"}
+        {t.paused && <span className="badge badge-alert ml-3">transfers paused</span>}
+      </h2>
+      <h1 className="lead">
+        {t.name ?? "…"}
+        {info?.description && <span className="q"> — {info.description}</span>}
+      </h1>
+      <p className="muted mt-3 text-[11px]">
         <AddressLink address={token} />
-      </div>
-      {info?.description && <p className="text-sm">{info.description}</p>}
-      <dl className="grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
+      </p>
+      <dl className="mt-12 grid gap-x-12 sm:grid-cols-2">
         <Row k="Total supply" v={formatAmount(t.totalSupply, t.decimals)} />
         <Row k="Maximum supply" v={t.cap === 0n ? "No cap" : formatAmount(t.cap, t.decimals)} />
         <Row k="Valuation" v={formatValuation(info?.valuation, info?.valuationCurrency)} />
@@ -60,8 +52,8 @@ function Overview({ token, t }: { token: Address; t: ReturnType<typeof useTokenS
           k="Metadata"
           v={
             info?.metadataURI ? (
-              <a className="underline" href={ipfsToHttp(info.metadataURI)} target="_blank" rel="noreferrer">
-                Open
+              <a href={ipfsToHttp(info.metadataURI)} target="_blank" rel="noreferrer">
+                open
               </a>
             ) : (
               "—"
@@ -69,13 +61,13 @@ function Overview({ token, t }: { token: Address; t: ReturnType<typeof useTokenS
           }
         />
       </dl>
-    </div>
+    </section>
   );
 }
 
 function Row({ k, v }: { k: string; v: React.ReactNode }) {
   return (
-    <div className="flex justify-between gap-4 border-b py-1" style={{ borderColor: "var(--border)" }}>
+    <div className="flex justify-between gap-4 border-b py-2" style={{ borderColor: "var(--line)" }}>
       <dt className="muted">{k}</dt>
       <dd className="text-right">{v}</dd>
     </div>
@@ -100,27 +92,27 @@ function useDocuments(token: Address) {
 function Documents({ docs }: { docs: ReturnType<typeof useDocuments>["list"] }) {
   return (
     <div className="card space-y-3">
-      <h2 className="font-semibold">Legal documents</h2>
-      {!docs.length && <p className="muted text-sm">No documents attached yet.</p>}
+      <h2>Legal documents</h2>
+      {!docs.length && <p className="muted">No documents attached yet.</p>}
       <ul className="space-y-3">
         {docs.map((d) => (
-          <li key={d.key} className="text-sm">
+          <li key={d.key} >
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="font-medium">{d.name}</span>
               {d.uri && (
-                <a className="underline" href={ipfsToHttp(d.uri)} target="_blank" rel="noreferrer">
+                <a href={ipfsToHttp(d.uri)} target="_blank" rel="noreferrer">
                   View document
                 </a>
               )}
             </div>
-            <div className="muted mono text-xs">keccak256: {d.hash}</div>
+            <div className="muted mono text-[11px]">keccak256: {d.hash}</div>
             {d.timestamp ? (
-              <div className="muted text-xs">Updated {new Date(Number(d.timestamp) * 1000).toLocaleString()}</div>
+              <div className="muted text-[11px]">Updated {new Date(Number(d.timestamp) * 1000).toLocaleString()}</div>
             ) : null}
           </li>
         ))}
       </ul>
-      <p className="muted text-xs">
+      <p className="muted text-[11px]">
         To check a document is authentic, compute the keccak256 hash of the file you downloaded and compare it with the hash
         above.
       </p>
@@ -156,13 +148,13 @@ function MyPosition({ token, t }: { token: Address; t: ReturnType<typeof useToke
 
   return (
     <div className="card space-y-3">
-      <h2 className="font-semibold">Your position</h2>
-      <div className="flex flex-wrap gap-2 text-sm">
+      <h2>Your position</h2>
+      <div className="flex flex-wrap gap-2">
         <span>
           Balance: <strong>{formatAmount(balance, t.decimals)}</strong> {t.symbol}
         </span>
         <span className="badge">{allowed ? "Allowlisted" : "Not allowlisted"}</span>
-        {frozen && <span className="badge">Frozen</span>}
+        {frozen && <span className="badge badge-alert">Frozen</span>}
       </div>
       {!!balance && balance > 0n && (
         <div className="grid gap-2 sm:grid-cols-[1fr_160px_auto] sm:items-end">
@@ -211,12 +203,12 @@ function InvestorTools({ token, onChange }: { token: Address; onChange: () => vo
 
   return (
     <div className="card space-y-3">
-      <h3 className="font-semibold">Investors</h3>
+      <h3>Investors</h3>
       <Field label="Wallet address">
         <input className="input mono" value={addr} onChange={(e) => setAddr(e.target.value.trim())} placeholder="0x…" />
       </Field>
       {valid && data && (
-        <div className="flex gap-2 text-sm">
+        <div className="flex gap-2">
           <span className="badge">{data[0]?.result ? "Allowlisted" : "Not allowlisted"}</span>
           <span className="badge">{data[1]?.result ? "Frozen" : "Not frozen"}</span>
         </div>
@@ -264,8 +256,8 @@ function SupplyTools({ token, decimals, onChange }: { token: Address; decimals: 
 
   return (
     <div className="card space-y-3">
-      <h3 className="font-semibold">Supply</h3>
-      <p className="muted text-sm">Mint to allowlisted investors on subscription. Burn from a holder on redemption.</p>
+      <h3>Supply</h3>
+      <p className="muted">Mint to allowlisted investors on subscription. Burn from a holder on redemption.</p>
       <div className="grid gap-2 sm:grid-cols-[1fr_160px]">
         <Field label="Investor">
           <input className="input mono" value={addr} onChange={(e) => setAddr(e.target.value.trim())} placeholder="0x…" />
@@ -284,8 +276,8 @@ function SupplyTools({ token, decimals, onChange }: { token: Address; decimals: 
       </div>
       <TxStatus {...tx} successText="Supply updated." />
 
-      <h4 className="pt-3 text-sm font-semibold">Forced transfer</h4>
-      <p className="muted text-sm">
+      <h4 className="pt-3">Forced transfer</h4>
+      <p className="muted">
         Moves tokens without the holder&apos;s signature, e.g. for lost keys or a court order. Works even if the wallet is
         frozen. The receiver must be allowlisted.
       </p>
@@ -331,7 +323,7 @@ function AssetTools({
 
   return (
     <div className="card space-y-3">
-      <h3 className="font-semibold">Asset & transfers</h3>
+      <h3>Asset & transfers</h3>
       <div className="grid gap-2 sm:grid-cols-[1fr_90px_auto] sm:items-end">
         <Field label="New valuation">
           <input className="input" inputMode="decimal" value={valuation} onChange={(e) => setValuation(e.target.value)} />
@@ -350,7 +342,7 @@ function AssetTools({
       <TxStatus {...valTx} successText="Valuation updated." />
 
       <div className="flex items-center justify-between gap-2 pt-2">
-        <p className="text-sm">
+        <p>
           Transfers are currently <strong>{paused ? "paused" : "active"}</strong>.
         </p>
         <button
@@ -407,13 +399,13 @@ function DocumentTools({
 
   return (
     <div className="card space-y-3">
-      <h3 className="font-semibold">Documents</h3>
-      <p className="muted text-sm">
+      <h3>Documents</h3>
+      <p className="muted">
         Choose a file to upload it to IPFS. Its keccak256 hash is computed in your browser and stored on-chain.
       </p>
-      <input type="file" className="text-sm" onChange={(e) => onFile(e.target.files?.[0])} />
-      {uploading && <p className="muted text-sm">Uploading to IPFS…</p>}
-      {uploadError && <p className="text-sm" style={{ color: "#c0392b" }}>{uploadError}</p>}
+      <input type="file" onChange={(e) => onFile(e.target.files?.[0])} />
+      {uploading && <p className="muted">Uploading to IPFS…</p>}
+      {uploadError && <p  style={{ color: "var(--alert)" }}>{uploadError}</p>}
       <div className="grid gap-2 sm:grid-cols-2">
         <Field label="Document name" hint="Max 32 characters, e.g. prospectus, land-registry, audit-2026.">
           <input className="input" value={name} onChange={(e) => setName(e.target.value)} />
@@ -422,7 +414,7 @@ function DocumentTools({
           <input className="input mono" value={uri} onChange={(e) => setUri(e.target.value.trim())} placeholder="ipfs://…" />
         </Field>
       </div>
-      {hash && <p className="muted mono text-xs">keccak256: {hash}</p>}
+      {hash && <p className="muted mono text-[11px]">keccak256: {hash}</p>}
       <button
         className="btn"
         disabled={!nameOk || !uri || tx.pending || uploading}
@@ -437,7 +429,7 @@ function DocumentTools({
         Save document on-chain
       </button>
       {docs.length > 0 && (
-        <ul className="space-y-1 pt-2 text-sm">
+        <ul className="space-y-1 pt-2">
           {docs.map((d) => (
             <li key={d.key} className="flex items-center justify-between gap-2">
               <span>{d.name}</span>
@@ -464,8 +456,8 @@ function RoleTools({ token }: { token: Address }) {
   const valid = isAddress(addr);
   return (
     <div className="card space-y-3">
-      <h3 className="font-semibold">Agents</h3>
-      <p className="muted text-sm">
+      <h3>Agents</h3>
+      <p className="muted">
         Agents can manage investors, supply, documents and pausing. Only the token admin (you) can add or remove them.
       </p>
       <Field label="Agent wallet">
@@ -515,17 +507,17 @@ export default function TokenPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-16">
       <Overview token={token} t={t} />
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-x-12 gap-y-4 lg:grid-cols-2">
         <Documents docs={docs.list} />
         <MyPosition token={token} t={t} />
       </div>
 
       {isAgent && (
-        <section className="space-y-4">
-          <h2 className="text-lg font-semibold">Manage token</h2>
-          <div className="grid gap-6 lg:grid-cols-2">
+        <section>
+          <h2 className="mb-6">manage token</h2>
+          <div className="grid gap-x-12 gap-y-4 lg:grid-cols-2">
             <InvestorTools token={token} onChange={refresh} />
             <SupplyTools token={token} decimals={t.decimals} onChange={refresh} />
             <AssetTools token={token} paused={t.paused} currency={t.assetInfo?.valuationCurrency} onChange={refresh} />

@@ -6,7 +6,7 @@ import { parseEventLogs, parseUnits, type Address } from "viem";
 import { useAccount, useReadContract } from "wagmi";
 import { rwaTokenFactoryAbi } from "@/abi/rwaTokenFactoryAbi";
 import { FactoryGuard } from "@/components/FactoryGuard";
-import { TokenCard } from "@/components/TokenCard";
+import { TokenCard, TokenList } from "@/components/TokenCard";
 import { Field, Notice, TxStatus } from "@/components/ui";
 import { useTx } from "@/lib/hooks";
 
@@ -92,7 +92,7 @@ function CreateTokenForm({ factory, onCreated }: { factory: Address; onCreated: 
 
   return (
     <form onSubmit={submit} className="card space-y-4">
-      <h2 className="font-semibold">Create a token</h2>
+      <h2>Create a token</h2>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Token name">
           <input className="input" required value={f.name} onChange={set("name")} placeholder="Zurich Office Building" />
@@ -108,7 +108,7 @@ function CreateTokenForm({ factory, onCreated }: { factory: Address; onCreated: 
         </Field>
       </div>
 
-      <h3 className="pt-2 text-sm font-semibold">Underlying asset</h3>
+      <h3 className="pt-2">Underlying asset</h3>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Asset type">
           <select className="input" value={f.assetType} onChange={set("assetType")}>
@@ -142,11 +142,11 @@ function CreateTokenForm({ factory, onCreated }: { factory: Address; onCreated: 
       <button className="btn" type="submit" disabled={tx.pending}>
         {tx.pending ? "Creating…" : "Create token"}
       </button>
-      {formError && <p className="text-sm" style={{ color: "#c0392b" }}>{formError}</p>}
+      {formError && <p  style={{ color: "var(--alert)" }}>{formError}</p>}
       <TxStatus {...tx} successText="Token created." />
       {created && (
-        <p className="text-sm">
-          <Link href={`/token/${created}`} className="underline">
+        <p>
+          <Link href={`/token/${created}`} >
             Open the new token
           </Link>{" "}
           to allowlist investors, mint and attach documents.
@@ -176,7 +176,7 @@ function IssuerPanel({ factory }: { factory: Address }) {
   if (!address) return <Notice>Connect your wallet to create and manage tokens.</Notice>;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-16">
       {isIssuer === false ? (
         <Notice>
           The connected wallet <span className="mono">{address}</span> is not an approved issuer. Ask the platform admin
@@ -186,15 +186,15 @@ function IssuerPanel({ factory }: { factory: Address }) {
         <CreateTokenForm factory={factory} onCreated={() => refetch()} />
       )}
       <section className="space-y-3">
-        <h2 className="font-semibold">Your tokens</h2>
+        <h2>your tokens</h2>
         {mine?.length ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <TokenList>
             {[...mine].reverse().map((t) => (
               <TokenCard key={t} address={t} />
             ))}
-          </div>
+          </TokenList>
         ) : (
-          <p className="muted text-sm">You haven&apos;t created any tokens yet.</p>
+          <p className="muted">You haven&apos;t created any tokens yet.</p>
         )}
       </section>
     </div>
@@ -203,8 +203,8 @@ function IssuerPanel({ factory }: { factory: Address }) {
 
 export default function IssuerPage() {
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Issuer</h1>
+    <div>
+      <h2 className="mb-9">issuer</h2>
       <FactoryGuard>{(factory) => <IssuerPanel factory={factory} />}</FactoryGuard>
     </div>
   );
